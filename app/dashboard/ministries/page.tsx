@@ -8,7 +8,13 @@ import { getInitials, getAvatarColor } from '@/lib/utils'
 
 const Modal = ({ open, onClose, title, children, size = 'md' }: any) => {
   if (!open) return null
-  const w = { sm: 'max-w-sm', md: 'max-w-lg', lg: 'max-w-2xl' }[size] || 'max-w-lg'
+  const sizes = {
+  sm: 'max-w-sm',
+  md: 'max-w-lg',
+  lg: 'max-w-2xl'
+} as const
+
+const w = sizes[size as keyof typeof sizes] || 'max-w-lg'
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-[#020617]/50 backdrop-blur-sm" />
