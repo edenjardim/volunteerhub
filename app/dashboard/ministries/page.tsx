@@ -61,7 +61,7 @@ export default function MinistriesPage() {
 
   const { data: ministries = [] } = useMinistries()
   const { data: volunteers = [] } = useVolunteers()
-  const list = ministries.length ? ministries : MOCK_MINISTRIES
+ const list = Array.isArray(ministries) && ministries.length ? ministries : MOCK_MINISTRIES
 
   const openDetail = (m: any) => { setSelected(m); setDetailTab('members'); setShowDetail(true) }
 
