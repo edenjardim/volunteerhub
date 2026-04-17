@@ -62,7 +62,7 @@ export default function EventsPage() {
   const [newEventType, setNewEventType] = useState<EventType>('regular')
 
   const { data: events = [] } = useEvents()
-  const list = events.length ? events : MOCK_EVENTS
+  const list = Array.isArray(events) && events.length ? events : MOCK_EVENTS
 
   const openDetail = (e: any) => { setSelected(e); setDetailTab('content'); setShowDetail(true) }
 
