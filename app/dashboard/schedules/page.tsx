@@ -13,7 +13,14 @@ const Modal = ({ open, onClose, title, children, size = 'md' }: {
   open: boolean; onClose: () => void; title: string; children: React.ReactNode; size?: string
 }) => {
   if (!open) return null
-  const w = { sm: 'max-w-sm', md: 'max-w-lg', lg: 'max-w-2xl', xl: 'max-w-3xl' }[size] || 'max-w-lg'
+const sizes = {
+  sm: 'max-w-sm',
+  md: 'max-w-lg',
+  lg: 'max-w-2xl',
+  xl: 'max-w-3xl'
+} as const
+
+const w = sizes[size as keyof typeof sizes] || 'max-w-lg'
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-[#020617]/50 backdrop-blur-sm" />
@@ -97,7 +104,7 @@ export default function SchedulesPage() {
   }
 
   // Fallback mock data
-  const displaySchedules = schedules.length ? schedules : [
+  const displaySchedules = Array.isArray(schedules) && schedules.length ? schedules : [
     { id: '1', event: { title: 'Culto Dominical Manhã' }, event_date: '2025-01-19', time: '09:00', ministry: { name: 'Louvor e Adoração', color: '#7C3AED' }, role: 'Vocal Principal', status: 'confirmed', volunteer: { name: 'Maria Oliveira' } },
     { id: '2', event: { title: 'Culto Dominical Noite' }, event_date: '2025-01-19', time: '19:00', ministry: { name: 'Mídia e Tecnologia', color: '#0891B2' }, role: 'Operador de Som', status: 'pending',   volunteer: { name: 'Lucas Ferreira' } },
     { id: '3', event: { title: 'Culto de Quarta'       }, event_date: '2025-01-22', time: '19:30', ministry: { name: 'Intercessão',        color: '#DC2626' }, role: 'Intercessor',   status: 'confirmed', volunteer: { name: 'Clara Mendes'   } },
@@ -148,7 +155,7 @@ export default function SchedulesPage() {
         <div className="flex gap-2 flex-1">
           <select className="input flex-1" onChange={e => setFilters({ ministry_id: e.target.value })}>
             <option value="">Todos os Ministérios</option>
-            {(ministries.length ? ministries : [
+            {(Array.isArray(ministries) && ministries.length ? ministries :  [
               { id: '1', name: 'Louvor e Adoração' },
               { id: '2', name: 'Infantil' },
               { id: '3', name: 'Mídia e Tecnologia' },
@@ -171,7 +178,7 @@ export default function SchedulesPage() {
         </div>
       ) : filters.view === 'ministry' ? (
         <div className="space-y-4">
-          {(ministries.length ? ministries : [
+          {(Array.isArray(ministries) && ministries.length ? ministries : [
             { id: '1', name: 'Louvor e Adoração', icon: '🎵', color: '#7C3AED', leader: { name: 'Maria Oliveira' }, member_count: 18 },
             { id: '2', name: 'Infantil',           icon: '🧒', color: '#2563EB', leader: { name: 'João Santos'    }, member_count: 12 },
             { id: '3', name: 'Mídia',              icon: '📱', color: '#0891B2', leader: { name: 'Lucas Ferreira' }, member_count: 8  },
@@ -264,7 +271,7 @@ export default function SchedulesPage() {
             <div>
               <label className="block text-sm font-semibold text-[#374151] mb-1.5">Ministério *</label>
               <select className="input">
-                {(ministries.length ? ministries : [
+                {(Array.isArray(ministries) && ministries.length ? ministries : [
                   { id: '1', name: 'Louvor' }, { id: '2', name: 'Infantil' },
                 ] as any[]).map(m => <option key={m.id}>{m.name}</option>)}
               </select>
@@ -277,7 +284,7 @@ export default function SchedulesPage() {
           <div>
             <label className="block text-sm font-semibold text-[#374151] mb-1.5">Voluntário *</label>
             <select className="input">
-              {(volunteers.length ? volunteers : [
+              {(Array.isArray(volunteers) && volunteers.length ? volunteers : [
                 { id: '1', name: 'Maria Oliveira' }, { id: '2', name: 'João Santos' },
               ] as any[]).map(v => <option key={v.id}>{v.name}</option>)}
             </select>
