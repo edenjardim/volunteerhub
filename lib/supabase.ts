@@ -7,6 +7,8 @@ export const createClientSupabase = () =>
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
+console.log('URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+console.log('KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
 // Alias para manter compatibilidade com o resto do sistema
 export const createClient = createClientSupabase
