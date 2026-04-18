@@ -1,5 +1,5 @@
 "use client"
-console.log('SUPABASE URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import toast from 'react-hot-toast'
@@ -10,65 +10,63 @@ export default function SchedulesPage() {
   const [schedules, setSchedules] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
-  // 🔄 LOAD
-  useEffect(() => {
-    async function load() {
-      const { data, error } = await supabase
-        .from('schedules')
-        .select('*')
+  // 🔄 LOAD (reutilizável)
+  const loadSchedules = async () => {
+    const { data, error } = await supabase
+      .from('schedules')
+      .select('*')
 
-      if (error) {
-        console.error(error)
-        toast.error('Erro ao carregar dados')
-      } else {
-        setSchedules(data || [])
-      }
-
-      setLoading(false)
+    if (error) {
+      console.error(error)
+      toast.error('Erro ao carregar dados')
+      return
     }
 
-    load()
+    setSchedules(data || [])
+  }
+
+  useEffect(() => {
+    loadSchedules().finally(() => setLoading(false))
   }, [])
 
-  // ➕ CREATE
+  // ➕ CREATE (AGORA COMPATÍVEL COM SUA TABELA)
   const createSchedule = async () => {
     const newItem = {
-      title: 'Novo Evento',
-      date: new Date().toISOString(),
+      event_id: crypto.randomUUID(),     // gera ID válido
+      ministry_id: crypto.randomUUID(),
+      volunteer_id: crypto.randomUUID(),
+      role: 'Teste',
       status: 'pending'
     }
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('schedules')
       .insert([newItem])
-      .select()
 
     if (error) {
+      console.error(error)
       toast.error('Erro ao criar')
       return
     }
 
-    setSchedules(prev => [...prev, ...data])
+    await loadSchedules()
     toast.success('Criado com sucesso')
   }
 
   // ✏️ UPDATE
   const updateSchedule = async (id: string) => {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('schedules')
-      .update({ title: 'Atualizado' })
+      .update({ role: 'Atualizado' })
       .eq('id', id)
-      .select()
 
     if (error) {
+      console.error(error)
       toast.error('Erro ao atualizar')
       return
     }
 
-    setSchedules(prev =>
-      prev.map(item => item.id === id ? data[0] : item)
-    )
-
+    await loadSchedules()
     toast.success('Atualizado')
   }
 
@@ -80,11 +78,12 @@ export default function SchedulesPage() {
       .eq('id', id)
 
     if (error) {
+      console.error(error)
       toast.error('Erro ao excluir')
       return
     }
 
-    setSchedules(prev => prev.filter(item => item.id !== id))
+    await loadSchedules()
     toast.success('Excluído')
   }
 
@@ -101,7 +100,7 @@ export default function SchedulesPage() {
       <ul>
         {schedules.map(s => (
           <li key={s.id} style={{ marginTop: 10 }}>
-            {s.title}
+            {s.role || 'Sem função'}
             <button onClick={() => updateSchedule(s.id)} style={{ marginLeft: 10 }}>
               Editar
             </button>
