@@ -1,5 +1,1 @@
-import { redirect } from 'next/navigation'
-
-export default function RootPage() {
-  redirect('/dashboard')
-}
+import { supabase } from '@/lib/supabase'
