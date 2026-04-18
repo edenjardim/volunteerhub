@@ -1,24 +1,27 @@
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from '@/types/supabase'
 
-// Cliente principal (browser)
-export const createClientInstance = () =>
+// Mantemos o nome createClient para não quebrar o projeto
+export const createClientSupabase = () =>
   createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
+// Alias para manter compatibilidade com o resto do sistema
+export const createClient = createClientSupabase
+
 // Singleton
-let client: ReturnType<typeof createClientInstance> | null = null
+let client: ReturnType<typeof createClientSupabase> | null = null
 
 export const getSupabaseClient = () => {
-  if (!client) client = createClientInstance()
+  if (!client) client = createClientSupabase()
   return client
 }
 
 // Auth helpers
 export const signIn = async (email: string, password: string) => {
-  const supabase = createClientInstance()
+  const supabase = createClientSupabase()
   return supabase.auth.signInWithPassword({ email, password })
 }
 
@@ -27,7 +30,7 @@ export const signUp = async (
   password: string,
   metadata?: Record<string, string>
 ) => {
-  const supabase = createClientInstance()
+  const supabase = createClientSupabase()
   return supabase.auth.signUp({
     email,
     password,
@@ -36,12 +39,12 @@ export const signUp = async (
 }
 
 export const signOut = async () => {
-  const supabase = createClientInstance()
+  const supabase = createClientSupabase()
   return supabase.auth.signOut()
 }
 
 export const signInWithGoogle = async () => {
-  const supabase = createClientInstance()
+  const supabase = createClientSupabase()
   return supabase.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo: `${window.location.origin}/auth/callback` },
@@ -49,7 +52,7 @@ export const signInWithGoogle = async () => {
 }
 
 export const getSession = async () => {
-  const supabase = createClientInstance()
+  const supabase = createClientSupabase()
   const {
     data: { session },
   } = await supabase.auth.getSession()
@@ -62,7 +65,7 @@ export const uploadFile = async (
   path: string,
   file: File
 ) => {
-  const supabase = createClientInstance()
+  const supabase = createClientSupabase()
 
   const { error } = await supabase.storage
     .from(bucket)
@@ -75,6 +78,6 @@ export const uploadFile = async (
 }
 
 export const deleteFile = async (bucket: string, path: string) => {
-  const supabase = createClientInstance()
+  const supabase = createClientSupabase()
   return supabase.storage.from(bucket).remove([path])
 }
