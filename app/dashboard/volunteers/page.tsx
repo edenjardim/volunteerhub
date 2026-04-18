@@ -63,7 +63,7 @@ export default function VolunteersPage() {
   const { data: volunteers = [] } = useVolunteers()
   const { data: ministries = [] } = useMinistries()
 
-  const list = (volunteers.length ? volunteers : MOCK).filter(v => {
+ const list = (Array.isArray(volunteers) && volunteers.length ? volunteers : MOCK).filter(v => {
     const matchSearch = v.name.toLowerCase().includes(debouncedSearch.toLowerCase())
     const matchMin    = !filterMin    || v.ministry === filterMin
     const matchStatus = !filterStatus || (filterStatus === 'active' ? v.is_active : !v.is_active)
@@ -170,7 +170,7 @@ export default function VolunteersPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3.5">
-                      <span className="badge bg-[#EFF6FF] text-secondary">{v.ministry || v.ministries?.[0]?.ministry?.name}</span>
+                      <span className="badge bg-[#EFF6FF] text-secondary">{v.ministry || (Array.isArray(v.ministries) ? v.ministries[0]?.ministry?.name : '')}</span>
                     </td>
                     <td className="px-4 py-3.5 text-sm text-muted">{v.role}</td>
                     <td className="px-4 py-3.5 min-w-[140px]">
